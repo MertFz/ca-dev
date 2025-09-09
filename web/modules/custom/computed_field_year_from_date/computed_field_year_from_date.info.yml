@@ -1,0 +1,6 @@
+name: Computed Field End/Start Year from Date
+type: module
+description: Computed Field Plugin to get the End/Start Year from a Date
+core_version_requirement: ^10 || ^11
+dependencies:
+  - computed_field

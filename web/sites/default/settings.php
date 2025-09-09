@@ -610,7 +610,7 @@ $settings['update_free_access'] = FALSE;
  * See https://www.drupal.org/documentation/modules/file for more information
  * about securing private files.
  */
-$settings['file_private_path'] = '/var/www/vhosts/vlogo.nl/ca-dev.vlogo.nl/private_files';
+$settings['file_private_path'] = 'C:/Users/Mert/Documents/GitHub/ca-dev/private_files';
 
 /**
  * Temporary file path:
@@ -623,7 +623,7 @@ $settings['file_private_path'] = '/var/www/vhosts/vlogo.nl/ca-dev.vlogo.nl/priva
  *
  * @see \Drupal\Component\FileSystem\FileSystem::getOsTemporaryDirectory()
  */
-$settings['file_temp_path'] = '/var/www/vhosts/vlogo.nl/ca-dev.vlogo.nl/tmp';
+$settings['file_temp_path'] = 'C:/Users/Mert/Documents/GitHub/ca-dev/tmp';
 
 /**
  * Session write interval:
@@ -773,7 +773,11 @@ $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.yml';
  *
  * @see https://www.drupal.org/docs/installing-drupal/trusted-host-settings
  */
-$settings['trusted_host_patterns'] = ['^ca-dev\.vlogo\.nl$'];
+$settings['trusted_host_patterns'] = [
+  '^ca-dev\.vlogo\.nl$',
+  '^localhost$',
+  '^127\.0\.0\.1$',
+];
 
 /**
  * The default list of directories that will be ignored by Drupal's file API.
@@ -893,15 +897,22 @@ $settings['migrate_node_migrate_type_classic'] = FALSE;
 #   include $app_root . '/' . $site_path . '/settings.local.php';
 # }
 $databases['default']['default'] = array (
-  'database' => 'vlogo_ca_dev',
-  'username' => 'vlogo_ca_dev',
-  'password' => '2wJ$wcaeNg9@9Amd',
-  'prefix' => '',
-  'host' => 'localhost',
-  'port' => '3306',
-  'isolation_level' => 'READ COMMITTED',
-  'driver' => 'mysql',
-  'namespace' => 'Drupal\\mysql\\Driver\\Database\\mysql',
-  'autoload' => 'core/modules/mysql/src/Driver/Database/mysql/',
+  // 'database' => 'vlogo_ca_dev',
+  // 'username' => 'vlogo_ca_dev',
+  // 'password' => '2wJ$wcaeNg9@9Amd',
+  // 'prefix' => '',
+  // 'host' => 'localhost',
+  // 'port' => '3306',
+  // 'isolation_level' => 'READ COMMITTED',
+  // 'driver' => 'mysql',
+  // 'namespace' => 'Drupal\\mysql\\Driver\\Database\\mysql',
+  // 'autoload' => 'core/modules/mysql/src/Driver/Database/mysql/',
 );
 $settings['config_sync_directory'] = 'sites/default/files/config_sOhTJHcWRNxUo0uk8bGRxen0DOZ1VtgnR0zINCKElB3sTILMM9O2kUDIM2wVhJR3kanEpNq6vA/sync';
+$databases['default']['default'] = [
+  'database' => 'drupal_local',
+  'username' => 'drupal_user',
+  'password' => 'uLZDYP5USuAnbJY',
+  'host' => 'localhost',
+  'driver' => 'mysql',
+];
