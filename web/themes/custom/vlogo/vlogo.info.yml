@@ -1,0 +1,19 @@
+name: vLOGO
+type: theme
+base theme: false
+description: vLOGO custom theme
+package: custom
+version: '0.0.1'
+core_version_requirement: ^10
+
+libraries:
+  - vlogo/global-styling
+
+regions:
+ header: Header
+ help: Help
+ primary_menu: Primary menu
+ highlighted: Highlighted
+ content: Content
+ footer: Footer
+ secondary_menu: Secondary menu

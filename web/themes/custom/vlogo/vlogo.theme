@@ -1,0 +1,20 @@
+<?php
+
+/**
+ * @file
+ * Functions to support theming in the vLOGO theme.
+ */
+ use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_alter().
+ */
+
+function vlogo_form_search_block_form_alter(array &$form, FormStateInterface $form_state) {
+    //dpm($form);
+    $form['actions']['#attributes']['class'][] = 'element-invisible';
+    $form['keys']['#attributes']['placeholder'] = t('zoek');
+    //$form['search_block_form']['#default_value'] = t('zoek'); // Set a default value for the textfield
+    //$form['search_block_form']['#attributes']['onfocus'] = "if (this.value == 'zoek') {this.value = '';}";
+    //dpm($form);
+}

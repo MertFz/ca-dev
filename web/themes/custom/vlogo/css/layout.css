@@ -1,0 +1,58 @@
+/* layout */
+#page-wrapper {}
+
+#page {
+  margin: 0 1rem;
+  padding: 1rem;
+}
+
+#header,
+#content,
+#navigation
+#footer {
+  padding-left: 0px;
+  padding-right: 0px;
+  box-sizing: border-box;
+  word-wrap: break-word;
+}
+
+/* Containers for grid items and flow items. */
+#header,
+#main,
+#footer {
+  position: relative;
+  zoom: 1;
+}
+
+#header:before,
+#header:after,
+#main:before,
+#main:after,
+#footer:before,
+#footer:after,
+#navigation:before,
+#navigation:after {
+  content: "";
+  display: table;
+}
+
+#header:after,
+#main:after,
+#footer:after
+#navigation:after {
+  clear: both;
+}
+
+#logo {
+    margin: 2rem auto 1rem auto;
+    text-align: center;
+}
+
+@media all and (min-width: 1024px) {
+    #page {
+        margin-left: auto;
+        margin-right: auto;
+        min-width: 1024px;
+        width: 80%;
+    }
+}

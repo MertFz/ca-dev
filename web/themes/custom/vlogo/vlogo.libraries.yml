@@ -1,0 +1,13 @@
+global-styling:
+  version: 0.1
+  css:
+    base:
+      css/reset.css: {}
+    layout:
+      css/layout.css: {}
+    theme:
+      css/style.css: {}
+  js:
+    js/vlogo.js: {}
+  dependencies:
+    - core/jquery

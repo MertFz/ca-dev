@@ -1,0 +1,60 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for active_menu_item_by_path module.
+ */
+
+/**
+ * Implements hook_preprocess_menu().
+ */
+function active_menu_item_by_path_preprocess_menu(&$variables) {
+  // Load configuration settings.
+  $config = \Drupal::config('active_menu_item_by_path.settings');
+  $allowed_types = $config->get('allowed_types');
+
+  // Check if the current menu name is among the allowed types.
+  if (!is_null($allowed_types)) {
+    if (in_array($variables['menu_name'], $allowed_types)) {
+      /*
+       * Add cache metadata to indicate that the menu
+       * depends on the current path.
+       */
+      $variables['#cache']['contexts'][] = 'url.path';
+
+      // Recursive function to process each menu item.
+      $process_items = function (&$items) use (&$process_items) {
+        foreach ($items as &$item) {
+          // Get the current path.
+          $current_path = \Drupal::service('path.current')->getPath();
+          $current_alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
+
+          // Get the menu link entity.
+          $menu_link = $item['original_link'];
+
+          // Get the URL for the menu item.
+          $url_object = $menu_link->getUrlObject();
+          $url = $url_object->toString();
+
+          // Check if the current path contains the menu link path.
+          if ($url !== '' && str_contains(strval($current_alias), strval($url))) {
+            $item['in_active_trail'] = TRUE;
+          }
+
+          // Check if the current path not in the front page.
+          if ($url_object->getRouteName() == '<front>' && $current_path !== '/node/1') {
+            $item['in_active_trail'] = FALSE;
+          }
+
+          // Check if the menu item has child.
+          if (!empty($item['below'])) {
+            $process_items($item['below']);
+          }
+        }
+      };
+
+      $process_items($variables['items']);
+    }
+  }
+
+}

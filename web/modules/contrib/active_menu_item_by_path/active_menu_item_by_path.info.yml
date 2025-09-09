@@ -1,0 +1,11 @@
+name: 'Active menu item by path'
+type: module
+description: 'Adds active class to menu items based on current path.'
+package: 'Menu'
+core_version_requirement: ^10
+configure: active_menu_item_by_path.configuration_settings
+
+# Information added by Drupal.org packaging script on 2024-03-17
+version: '1.3.1'
+project: 'active_menu_item_by_path'
+datestamp: 1710675894

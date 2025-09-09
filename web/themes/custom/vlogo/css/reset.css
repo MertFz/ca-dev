@@ -1,0 +1,44 @@
+
+/* resets */
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+html {
+    box-sizing: border-box;
+}
+
+fieldset {
+    margin: 0;
+    padding: 0;
+}
+
+.clearfix:after {
+    display: none;
+}
+
+.element-invisible {
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px 1px 1px 1px);
+    clip: rect(1px, 1px, 1px, 1px);
+}
+
+.element-invisible.element-focusable:active,
+.element-invisible.element-focusable:focus {
+    position: static !important;
+    clip: auto;
+    overflow: visible;
+    height: auto;
+}
+
+.clearfix:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}

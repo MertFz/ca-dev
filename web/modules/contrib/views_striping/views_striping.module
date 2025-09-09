@@ -1,0 +1,55 @@
+<?php
+
+/**
+ * @file
+ * Contains hook implementations for the Views striping module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function views_striping_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.views_striping':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The Views striping module adds CSS classes to a view\'s rows to create stripes of alternating colours.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements template_preprocess_views_view_table().
+ */
+function views_striping_preprocess_views_view_table(&$variables) {
+  $extenders = $variables['view']->display_handler->getExtenders();
+  if (isset($extenders['views_striping'])) {
+    $extender = $extenders['views_striping'];
+
+    if (!empty($extender->options['striping_type'])) {
+      // Hand over to the extender to add the striping classes to the rendered
+      // rows.
+      $extender->preprocessViewStyle($variables);
+    }
+  }
+}
+
+/**
+ * Implements template_preprocess_views_aggregator_results_table().
+ */
+function views_striping_preprocess_views_aggregator_results_table(&$variables) {
+  $extenders = $variables['view']->display_handler->getExtenders();
+  if (isset($extenders['views_striping'])) {
+    $extender = $extenders['views_striping'];
+
+    if (!empty($extender->options['striping_type'])) {
+      // Hand over to the extender to add the striping classes to the rendered
+      // rows.
+      $extender->preprocessViewStyle($variables);
+    }
+  }
+}

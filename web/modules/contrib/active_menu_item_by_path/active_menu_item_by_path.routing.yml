@@ -1,0 +1,9 @@
+active_menu_item_by_path.configuration_settings:
+  path: '/admin/config/content/active-menu-settings'
+  defaults: 
+    _form: '\Drupal\active_menu_item_by_path\Form\ActiveMenuItemByPathSettingsForm'
+    _title: 'Active Menu Item By Path Settings'
+  requirements:
+    _permission: 'access active menu settings'
+  options:
+    _admin_route: TRUE

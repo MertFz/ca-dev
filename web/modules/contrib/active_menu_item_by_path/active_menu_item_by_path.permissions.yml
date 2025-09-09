@@ -1,0 +1,4 @@
+access active menu settings:
+  title: 'Access Active Menu Settings'
+  description: 'Enables the selection of a specific menu for applying the active menu path.'
+  restrict access: TRUE
