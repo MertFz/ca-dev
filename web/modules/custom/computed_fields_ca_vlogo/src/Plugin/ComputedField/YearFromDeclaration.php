@@ -20,7 +20,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
   no_ui: FALSE,
   cardinality: 1,
 )]
-class DeclarationYear extends ComputedFieldBase {
+class YearFromDeclaration extends ComputedFieldBase {
 
   /**
    * {@inheritdoc}

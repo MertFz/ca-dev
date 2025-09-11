@@ -20,7 +20,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
   no_ui: FALSE,
   cardinality: 1,
 )]
-class ComputedRegistrationNumber extends ComputedFieldBase {
+class RegistrationNumber extends ComputedFieldBase {
 
   /**
    * {@inheritdoc}
