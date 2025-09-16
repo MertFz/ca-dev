@@ -1,0 +1,6 @@
+name: Computed Fields Vlogo
+type: module
+description: Computed Field Plugins for Vlogo
+core_version_requirement: ^10 || ^11
+dependencies:
+  - computed_field
