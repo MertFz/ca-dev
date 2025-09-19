@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\computed_fields_ca_vlogo\Plugin\ComputedField;
+namespace Drupal\computed_fields_vlogo\Plugin\ComputedField;
 
 use Drupal\computed_field\Attribute\ComputedField;
 use Drupal\computed_field\Field\ComputedFieldDefinitionWithValuePluginInterface;
