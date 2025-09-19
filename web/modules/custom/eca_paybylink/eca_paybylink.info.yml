@@ -1,0 +1,7 @@
+name: 'ECA PayByLink'
+type: module
+description: 'Provides an ECA action for PayByLink API requests.'
+core_version_requirement: ^10
+package: ECA
+dependencies:
+  - eca:eca

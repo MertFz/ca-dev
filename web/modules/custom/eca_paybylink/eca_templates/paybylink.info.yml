@@ -1,0 +1,12 @@
+id: paybylink_request
+label: 'Make PayByLink Request'
+description: 'Send a request to PayByLink API'
+action_plugin: paybylink_request
+properties:
+  url: 'https://testapi.paybylink.eu/payment'
+  key: '9df037b1-244e-4150-8b2e-b3c05ef00de1'
+  user: '8d0f2ca458834858'
+  password: 'hx2PD#uG297h&eVv'
+  command: 'CREATE'
+  reference: ''
+  data: ''
