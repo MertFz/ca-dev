@@ -4,19 +4,20 @@ namespace Drupal\eca_paybylink\Plugin\Action;
 
 use Drupal\Core\Action\ActionBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\eca\Plugin\Action\ConfigurableActionBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
 use GuzzleHttp\ClientInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * @Action(
- * id = "eca_paybylink_request",
- * label = @Translation("Make PayByLink Request"),
- * type = "system"
- * )
+* @Action(
+*   id = "eca_paybylink_request",
+*   label = @Translation("Make PayByLink Request"),
+*   type = "custom",
+* )
  */
-class PayByLinkRequest extends ActionBase implements ContainerFactoryPluginInterface {
+class PayByLinkRequest extends ConfigurableActionBase {
 
   /**
    * The HTTP client.
@@ -25,39 +26,20 @@ class PayByLinkRequest extends ActionBase implements ContainerFactoryPluginInter
    */
   protected $httpClient;
 
+
   /**
-   * Constructs a new PayByLinkRequest object.
-   *
-   * @param array $configuration
-   * A configuration array containing information about the plugin instance.
-   * @param string $plugin_id
-   * The plugin_id for the plugin instance.
-   * @param mixed $plugin_definition
-   * The plugin implementation definition.
-   * @param \GuzzleHttp\ClientInterface $http_client
-   * The Guzzle HTTP client.
+   * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ClientInterface $http_client) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->httpClient = $http_client;
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): static {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->httpClient = $container->get('http_client');
+    return $instance;
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('http_client')
-    );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function defaultConfiguration() {
+  public function defaultConfiguration(): array {
     return [
       'url' => 'https://testapi.paybylink.eu/payment',
       'key' => '9df037b1-244e-4150-8b2e-b3c05ef00de1',
@@ -72,7 +54,7 @@ class PayByLinkRequest extends ActionBase implements ContainerFactoryPluginInter
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
     $form['url'] = [
       '#type' => 'textfield',
       '#title' => $this->t('URL'),
@@ -118,7 +100,7 @@ class PayByLinkRequest extends ActionBase implements ContainerFactoryPluginInter
   /**
    * {@inheritdoc}
    */
-  public function execute($entity = NULL) {
+  public function execute($entity = NULL) : void {
     $url = $this->configuration['url'];
     $key = $this->configuration['key'];
     $user = $this->configuration['user'];
