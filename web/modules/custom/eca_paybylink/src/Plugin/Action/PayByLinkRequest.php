@@ -45,7 +45,8 @@ class PayByLinkRequest extends ConfigurableActionBase {
       'key' => '9df037b1-244e-4150-8b2e-b3c05ef00de1',
       'user' => '8d0f2ca458834858',
       'password' => 'hx2PD#uG297h&eVv',
-      'command' => 'GET',
+  // Default to POST (create) since the API expects form data on create.
+  'command' => 'POST',
       'reference' => '',
       'data' => '',
     ] + parent::defaultConfiguration();
@@ -78,9 +79,10 @@ class PayByLinkRequest extends ConfigurableActionBase {
     ];
     $form['command'] = [
       '#type' => 'select',
-      '#title' => $this->t('Command'),
-      '#options' => ['GET' => 'GET', 'CREATE' => 'CREATE'],
+      '#title' => $this->t('HTTP Method'),
+      '#options' => ['POST' => 'POST (create)', 'GET' => 'GET (retrieve)'],
       '#default_value' => $this->configuration['command'],
+      '#description' => $this->t('Use POST to create a PayByLink (sends form data). Use GET to retrieve by reference.'),
     ];
     $form['reference'] = [
       '#type' => 'textfield',
@@ -109,17 +111,19 @@ class PayByLinkRequest extends ConfigurableActionBase {
     $reference = $this->configuration['reference'];
     $data = $this->configuration['data'];
 
-    // Construct the URL based on the command.
-    switch ($command) {
-      case 'CREATE':
-        $url .= '/create/' . $key;
-        break;
-      default:
-        $url .= '/url/' . $key . '/' . $reference;
+    // Construct the URL based on the HTTP method selected.
+    if (strtoupper($command) === 'POST') {
+      // POST/create endpoint.
+      $url .= '/create/' . $key;
+    }
+    else {
+      // GET/retrieve endpoint.
+      $url .= '/url/' . $key . '/' . $reference;
     }
 
+    // Only send Authorization header; let Guzzle set Content-Type based on payload
+    // (form_params will send application/x-www-form-urlencoded).
     $headers = [
-      'Content-Type' => 'application/json',
       'Authorization' => 'Basic ' . base64_encode($user . ':' . $password),
     ];
 
@@ -135,15 +139,70 @@ class PayByLinkRequest extends ConfigurableActionBase {
     }
 
     try {
-      $response = $this->httpClient->request('GET', $url, [
-        'headers' => $headers,
-        'query' => $query,
-      ]);
+      if (strtoupper($command) === 'POST') {
+        // POST to create endpoint with form-encoded body (preserve field names/case).
+        $response = $this->httpClient->request('POST', $url, [
+          'headers' => $headers,
+          'form_params' => $query,
+        ]);
+      }
+      else {
+        // GET request with query string.
+        $response = $this->httpClient->request('GET', $url, [
+          'headers' => $headers,
+          'query' => $query,
+        ]);
+      }
       $body = $response->getBody()->getContents();
 
-      // Return the response body to make it available to other ECA actions.
+      // Return the full response body to make it available to other ECA actions.
       $this->setContextValue('paybylink_response', $body);
-      \Drupal::logger('eca_paybylink')->info("PayByLink request successful. Response: @response", ['@response' => $body]);
+
+      // Try to extract a payment URL from the response and expose it as a
+      // separate context value `paybylink_url` so downstream ECA actions can
+      // save it on entities.
+      $paybylink_url = NULL;
+      $decoded = json_decode($body, TRUE);
+      if (is_array($decoded)) {
+        // Common keys that might contain the URL.
+        $candidates = ['url', 'Url', 'paymentUrl', 'PaymentUrl', 'link', 'Link', 'data'];
+        foreach ($candidates as $k) {
+          if (isset($decoded[$k])) {
+            if (is_string($decoded[$k])) {
+              $paybylink_url = $decoded[$k];
+              break;
+            }
+            if (is_array($decoded[$k]) && isset($decoded[$k]['url'])) {
+              $paybylink_url = $decoded[$k]['url'];
+              break;
+            }
+          }
+        }
+        // If not found, scan recursively for the first string that looks like a URL.
+        if (!$paybylink_url) {
+          $iterator = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($decoded));
+          foreach ($iterator as $val) {
+            if (is_string($val) && preg_match('#https?://#i', $val)) {
+              $paybylink_url = $val;
+              break;
+            }
+          }
+        }
+      }
+      else {
+        // Not JSON: try to find a URL in the raw body.
+        if (preg_match('#https?://[^\s"\']+#i', $body, $m)) {
+          $paybylink_url = $m[0];
+        }
+      }
+
+      if ($paybylink_url) {
+        $this->setContextValue('paybylink_url', $paybylink_url);
+        \Drupal::logger('eca_paybylink')->info('PayByLink request successful. Extracted URL: @url', ['@url' => $paybylink_url]);
+      }
+      else {
+        \Drupal::logger('eca_paybylink')->info('PayByLink request successful. Response: @response', ['@response' => $body]);
+      }
     }
     catch (\Exception $e) {
       \Drupal::logger('eca_paybylink')->error("PayByLink request failed with error: @error", ['@error' => $e->getMessage()]);
