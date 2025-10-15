@@ -212,8 +212,16 @@ class PayByLinkRequest extends ConfigurableActionBase {
   /**
    * {@inheritdoc}
    */
-  public function access($object, AccountInterface $account = NULL, $return_as_object = FALSE) {
-    return $account->hasPermission('administer site configuration');
+public function access($object, AccountInterface $account = NULL, $return_as_object = FALSE) {
+  // Zorg dat er altijd een account is.
+  $account = $account ?: \Drupal::currentUser();
+
+  if ($account && $account->hasPermission('use paybylink action')) {
+    return AccessResult::allowed();
   }
+
+  return AccessResult::forbidden();
+}
+
 
 }
