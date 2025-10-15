@@ -140,6 +140,11 @@ class PayByLinkRequest extends ConfigurableActionBase {
   $reference = $this->configuration['reference'] ?? $this->getConfiguration()['reference'] ?? '';
   $data = $this->configuration['data'] ?? $this->getConfiguration()['data'] ?? '';
 
+  // Replace tokens (token module or manual replacements) in the configured
+  // data so placeholders like [node:id] or [current_form:values:email]
+  // are resolved to actual values before sending.
+  $data = $this->replaceTokensInString($data, $entity);
+
     // Construct the URL based on the HTTP method selected.
     if (strtoupper($command) === 'POST') {
       // POST/create endpoint.
@@ -245,6 +250,51 @@ public function access($object, AccountInterface $account = NULL, $return_as_obj
 
   return AccessResult::forbidden();
 }
+
+  /**
+   * Replace common tokens in a string using the token service when available.
+   *
+   * Supports basic replacements for [node:id] and [current_form:values:FIELD].
+   */
+  protected function replaceTokensInString(string $text, $entity = NULL): string {
+    // If token module is available, use it for broader replacement support.
+    if (\Drupal::moduleHandler()->moduleExists('token')) {
+      try {
+        $tokens = [];
+        $data = [];
+        if ($entity) {
+          $data['node'] = $entity;
+        }
+        // Use the token service.
+        $text = \Drupal::token()->replace($text, $data, ['clear' => TRUE]);
+      }
+      catch (\Exception $e) {
+        // Fall back to manual replacement below.
+      }
+    }
+
+    // Manual replacements: [node:id]
+    if ($entity && is_object($entity) && method_exists($entity, 'id')) {
+      $text = str_replace('[node:id]', $entity->id(), $text);
+    }
+
+    // Replace basic current_form tokens like [current_form:values:email]
+    if (preg_match_all('/\[current_form:values:([a-zA-Z0-9_]+)\]/', $text, $matches)) {
+      foreach ($matches[1] as $i => $field) {
+        // Try to find form values in the current request (POST).
+        $value = NULL;
+        $request = \Drupal::request();
+        $post = $request->request->all();
+        if (isset($post[$field])) {
+          $value = $post[$field];
+        }
+        // Fallback: empty string
+        $text = str_replace($matches[0][$i], $value ?? '', $text);
+      }
+    }
+
+    return $text;
+  }
 
 
 }
