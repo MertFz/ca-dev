@@ -123,12 +123,6 @@ class PayByLinkRequest extends ConfigurableActionBase {
       $url .= '/url/' . $key . '/' . $reference;
     }
 
-    // Only send Authorization header; let Guzzle set Content-Type based on payload
-    // (form_params will send application/x-www-form-urlencoded).
-    $headers = [
-      'Authorization' => 'Basic ' . base64_encode($user . ':' . $password),
-    ];
-
     // Prepare the query data from the user input.
     $query = [];
     if (!empty($data)) {
@@ -143,15 +137,15 @@ class PayByLinkRequest extends ConfigurableActionBase {
     try {
       if (strtoupper($command) === 'POST') {
         // POST to create endpoint with form-encoded body (preserve field names/case).
-        $response = $this->httpClient->request('POST', $url, [
-          'headers' => $headers,
+       $response = $this->httpClient->request('POST', $url, [
+          'auth' => [$user, $password],  // Basic Auth
           'form_params' => $query,
         ]);
       }
       else {
         // GET request with query string.
         $response = $this->httpClient->request('GET', $url, [
-          'headers' => $headers,
+          'auth' => [$user, $password],
           'query' => $query,
         ]);
       }
