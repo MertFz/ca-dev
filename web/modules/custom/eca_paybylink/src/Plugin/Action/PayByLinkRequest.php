@@ -62,44 +62,41 @@ class PayByLinkRequest extends ConfigurableActionBase {
     // properly attached/saved.
     $form = parent::buildConfigurationForm($form, $form_state);
 
-    // Ensure a configuration container exists so the base class can save values.
-    $form['configuration'] = $form['configuration'] ?? [];
-
-    $form['configuration']['url'] = [
+    $form['url'] = [
       '#type' => 'textfield',
       '#title' => $this->t('URL'),
       '#default_value' => $this->configuration['url'],
       '#description' => $this->t('The base URL for the PayByLink API.'),
     ];
-    $form['configuration']['key'] = [
+    $form['key'] = [
       '#type' => 'textfield',
       '#title' => $this->t('API Key'),
       '#default_value' => $this->configuration['key'],
     ];
-    $form['configuration']['user'] = [
+    $form['user'] = [
       '#type' => 'textfield',
       '#title' => $this->t('User'),
       '#default_value' => $this->configuration['user'],
     ];
-    $form['configuration']['password'] = [
+    $form['password'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Password'),
       '#default_value' => $this->configuration['password'],
     ];
-    $form['configuration']['command'] = [
+    $form['command'] = [
       '#type' => 'select',
       '#title' => $this->t('HTTP Method'),
       '#options' => ['POST' => 'POST (create)', 'GET' => 'GET (retrieve)'],
       '#default_value' => $this->configuration['command'],
       '#description' => $this->t('Use POST to create a PayByLink (sends form data). Use GET to retrieve by reference.'),
     ];
-    $form['configuration']['reference'] = [
+    $form['reference'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Reference'),
       '#default_value' => $this->configuration['reference'],
       '#description' => $this->t('The PayByLink reference, only for GET command.'),
     ];
-    $form['configuration']['data'] = [
+    $form['data'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Data'),
       '#default_value' => $this->configuration['data'],
@@ -112,11 +109,12 @@ class PayByLinkRequest extends ConfigurableActionBase {
    * {@inheritdoc}
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state): void {
-    // The configuration fields are under the 'configuration' container.
-    $values = $form_state->getValue('configuration');
-    if (is_array($values)) {
-      foreach ($values as $key => $value) {
-        $this->configuration[$key] = $value;
+    // Read top-level values (form fields) and persist into plugin configuration.
+    $keys = ['url','key','user','password','command','reference','data'];
+    foreach ($keys as $k) {
+      $val = $form_state->getValue($k);
+      if ($val !== NULL) {
+        $this->configuration[$k] = $val;
       }
     }
 
