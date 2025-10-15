@@ -105,13 +105,15 @@ class PayByLinkRequest extends ConfigurableActionBase {
    * {@inheritdoc}
    */
   public function execute($entity = NULL) : void {
-    $url = $this->configuration['url'];
-    $key = $this->configuration['key'];
-    $user = $this->configuration['user'];
-    $password = $this->configuration['password'];
-    $command = $this->configuration['command'];
-    $reference = $this->configuration['reference'];
-    $data = $this->configuration['data'];
+    $config = $this->getConfiguration();
+
+    $url = $config['url'];
+    $key = $config['key'];
+    $user = $config['user'];
+    $password = $config['password'];
+    $command = $config['command'];
+    $reference = $config['reference'];
+    $data = $config['data'];
 
     // Construct the URL based on the HTTP method selected.
     if (strtoupper($command) === 'POST') {
