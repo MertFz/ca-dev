@@ -43,7 +43,7 @@ class PayByLinkRequest extends ConfigurableActionBase {
    */
   public function defaultConfiguration(): array {
     return [
-      'url' => 'https://testapi.paybylink.eu/payment',
+      'url' => 'https://testapi.paybylink.com/payment',
       'key' => '9df037b1-244e-4150-8b2e-b3c05ef00de1',
       'user' => '8d0f2ca458834858',
       'password' => 'hx2PD#uG297h&eVv',
