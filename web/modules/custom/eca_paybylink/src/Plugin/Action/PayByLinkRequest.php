@@ -7,6 +7,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\eca\Plugin\Action\ConfigurableActionBase;
+use Drupal\Core\Plugin\ContextAwarePluginTrait;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use GuzzleHttp\ClientInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -20,6 +21,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 * )
  */
 class PayByLinkRequest extends ConfigurableActionBase {
+  use ContextAwarePluginTrait;
 
   /**
    * The HTTP client.
