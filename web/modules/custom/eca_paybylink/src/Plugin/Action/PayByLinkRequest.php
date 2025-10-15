@@ -58,6 +58,10 @@ class PayByLinkRequest extends ConfigurableActionBase {
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
+    // Let the base class build any base form and ensure configuration is
+    // properly attached/saved.
+    $form = parent::buildConfigurationForm($form, $form_state);
+
     $form['url'] = [
       '#type' => 'textfield',
       '#title' => $this->t('URL'),
@@ -105,15 +109,16 @@ class PayByLinkRequest extends ConfigurableActionBase {
    * {@inheritdoc}
    */
   public function execute($entity = NULL) : void {
-    $config = $this->getConfiguration();
-
-    $url = $config['url'];
-    $key = $config['key'];
-    $user = $config['user'];
-    $password = $config['password'];
-    $command = $config['command'];
-    $reference = $config['reference'];
-    $data = $config['data'];
+  // Use the saved instance configuration (set via the form) so that
+  // custom parameters configured in the ECA UI are used rather than
+  // the class defaults.
+  $url = $this->configuration['url'] ?? $this->getConfiguration()['url'] ?? '';
+  $key = $this->configuration['key'] ?? $this->getConfiguration()['key'] ?? '';
+  $user = $this->configuration['user'] ?? $this->getConfiguration()['user'] ?? '';
+  $password = $this->configuration['password'] ?? $this->getConfiguration()['password'] ?? '';
+  $command = $this->configuration['command'] ?? $this->getConfiguration()['command'] ?? 'POST';
+  $reference = $this->configuration['reference'] ?? $this->getConfiguration()['reference'] ?? '';
+  $data = $this->configuration['data'] ?? $this->getConfiguration()['data'] ?? '';
 
     // Construct the URL based on the HTTP method selected.
     if (strtoupper($command) === 'POST') {
