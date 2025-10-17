@@ -1,0 +1,21 @@
+{# Token Revocation Information Template #}
+<div class="token-revocation-section" style="font-size: 14px; line-height: 1.6; color: #333;">
+  <h3 class="token-endpoint">Token Revocation Endpoint</h3>
+
+  <p class="token-endpoint"><strong>Endpoint:</strong></p>
+  <div class="endpoint-box">
+    <span class="method" style="font-weight: bold;padding: 2px 8px; border-radius: 4px;">POST</span>
+    <span class="url" style="margin-left: 10px; color: #555;">{{ endpoint }}</span>
+  </div>
+
+  <p class="token-endpoint"><strong>Parameters:</strong></p>
+  <ul style="margin-left: 20px;">
+    <li class="token-endpoint"><strong>token</strong> <em>(required)</em> – Access token to revoke</li>
+    <li class="token-endpoint"><strong>token_type_hint</strong> <em>(optional)</em> – Hint about the type of the token</li>
+  </ul>
+
+  <p class="token-endpoint"><strong>Response:</strong></p>
+  <div class="response-box" style="">
+    { "status": "success", "message": "Token revoked successfully" }
+  </div>
+</div>

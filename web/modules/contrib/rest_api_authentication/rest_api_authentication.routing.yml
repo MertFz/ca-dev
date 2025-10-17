@@ -1,0 +1,93 @@
+rest_api_authentication.auth_settings:
+  path: /admin/config/people/rest_api_authentication/auth_settings
+  defaults:
+    _title: 'miniOrange API Authentication <a class="button button--primary js-form-submit form-submit use-ajax mo_top_bar_button" href="requestSupport">Contact Us</a><a class="button button--primary js-form-submit form-submit use-ajax mo_top_bar_button" href="requestFreeTrial">Request 7-days trial</a>'
+    _form: \Drupal\rest_api_authentication\Form\MiniOrangeAPIAuth
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    parameters:
+      tab:
+        type: string
+        optional: true
+
+rest_api_authentication.advanced_settings:
+  path: /admin/config/people/rest_api_authentication/advanced-settings
+  defaults:
+    _title: 'Advanced Settings <a class="button button--primary js-form-submit form-submit use-ajax mo_top_bar_button" href="requestSupport">Contact Us</a><a class="button button--primary js-form-submit form-submit use-ajax mo_top_bar_button" href="requestFreeTrial">Request 7-days trial</a>'
+    _form: \Drupal\rest_api_authentication\Form\AdvancedSettingsForm
+  requirements:
+    _permission: 'administer site configuration'
+
+rest_api_authentication.headless_sso:
+  path: /admin/config/people/rest_api_authentication/headless-sso
+  defaults:
+    _title: 'Headless SSO <a class="button button--primary js-form-submit form-submit use-ajax mo_top_bar_button" href="requestSupport">Contact Us</a><a class="button button--primary js-form-submit form-submit use-ajax mo_top_bar_button" href="requestFreeTrial">Request 7-days trial</a>'
+    _form: \Drupal\rest_api_authentication\Form\HeadlessSSOForm
+  requirements:
+    _permission: 'administer site configuration'
+
+rest_api_authentication.audit_logs:
+  path: /admin/config/people/rest_api_authentication/audit-logs
+  defaults:
+    _title: 'Audit Logs <a class="button button--primary js-form-submit form-submit use-ajax mo_top_bar_button" href="requestSupport">Contact Us</a><a class="button button--primary js-form-submit form-submit use-ajax mo_top_bar_button" href="requestFreeTrial">Request 7-days trial</a>'
+    _form: \Drupal\rest_api_authentication\Form\AuditLogsForm
+  requirements:
+    _permission: 'administer site configuration'
+
+#Route for Support Request/Contact Us
+rest_api_authentication.request_api_support:
+  path: /admin/config/people/rest_api_authentication/requestSupport
+  defaults:
+    _title: 'miniOrange API Authentication Request Support'
+    _controller: '\Drupal\rest_api_authentication\Controller\RestApiAuthenticationController::openSupportRequestForm'
+  requirements:
+    _permission: 'administer site configuration'
+
+#Route for Trial Request
+rest_api_authentication.request_trial:
+  path: /admin/config/people/rest_api_authentication/requestFreeTrial
+  defaults:
+    _title: 'miniOrange API Authentication Trial Request'
+    _controller: '\Drupal\rest_api_authentication\Controller\RestApiAuthenticationController::openTrialRequestForm'
+  requirements:
+    _permission: 'administer site configuration'
+
+rest_api_authentication.delete_logs_confirm:
+  path: /admin/config/people/rest_api_authentication/delete-logs-confirm
+  defaults:
+    _title: 'Delete Old Authentication Logs'
+    _form: \Drupal\rest_api_authentication\Form\DeleteLogsConfirmForm
+  requirements:
+    _permission: 'administer site configuration'
+
+rest_api_authentication.delete_application:
+  path: /admin/config/people/rest_api_authentication/delete-application/{app_id}
+  defaults:
+    _title: 'Delete Application'
+    _controller: '\Drupal\rest_api_authentication\Controller\RestApiAuthenticationController::deleteApplication'
+  requirements:
+    _permission: 'administer site configuration'
+
+rest_api_authentication.set_default_application:
+  path: /admin/config/people/rest_api_authentication/set-default-application/{app_id}
+  defaults:
+    _title: 'Set Default Application'
+    _controller: '\Drupal\rest_api_authentication\Controller\RestApiAuthenticationController::setDefaultApplication'
+  requirements:
+    _permission: 'administer site configuration'    
+
+rest_api_authentication.upgrade_plans:
+  path: /admin/config/people/rest_api_authentication/upgrade-plans
+  defaults:
+    _title: 'Upgrade Plans <a class="button button--primary js-form-submit form-submit use-ajax mo_top_bar_button" href="requestSupport">Contact Us</a><a class="button button--primary js-form-submit form-submit use-ajax mo_top_bar_button" href="requestFreeTrial">Request 7-days trial</a>'
+    _form: \Drupal\rest_api_authentication\Form\UpgradePlansForm
+  requirements:
+    _permission: 'administer site configuration'
+
+rest_api_authentication.token_revoke:
+  path: /rest_api/revoke
+  defaults:
+    _controller: '\Drupal\rest_api_authentication\Controller\RestApiAuthenticationController::revokeToken'
+  requirements:
+    _access: 'TRUE'

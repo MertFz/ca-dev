@@ -1,0 +1,175 @@
+<?php
+
+/**
+ * @file
+ * Installation file for miniOrange REST API Module.
+ */
+
+/**
+ * Install function which execute while installing the module.
+ */
+function rest_api_authentication_install() {
+  drupal_flush_all_caches();
+}
+
+function rest_api_authentication_schema() {
+
+ $schema['rest_api_authentication_logs'] = array(
+  'description' => t('REST API Authentication Logs'),
+  'fields' => array(
+    'id' => array(
+      'type' => 'serial',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+      'description' => t('Primary Key: Unique log entry ID.'),
+    ),
+    'timestamp' => array(
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+      'description' => t('Timestamp of the authentication attempt.'),
+    ),
+
+    'username' => array(
+      'type' => 'varchar',
+      'length' => 255,
+      'not null' => FALSE,
+      'description' => t('The username attempting to authenticate (or "anonymous").'),
+    ),
+    'client_ip' => array(
+      'type' => 'varchar',
+      'length' => 45,
+      'not null' => TRUE,
+      'description' => t('IP address from which the request originated.'),
+    ),
+    'request_method' => array(
+      'type' => 'varchar',
+      'length' => 10,
+      'not null' => TRUE,
+      'description' => t('HTTP method (GET, POST, etc.).'),
+    ),
+    'endpoint_url' => array(
+      'type' => 'text',
+      'not null' => TRUE,
+      'description' => t('The REST endpoint being accessed.'),
+    ),
+    'authentication_method' => array(
+      'type' => 'varchar',
+      'length' => 50,
+      'not null' => TRUE,
+      'description' => t('Authentication method used (Basic Auth, API Key, OAuth, JWT, etc.).'),
+    ),
+    'status' => array(
+      'type' => 'varchar',
+      'length' => 20,
+      'not null' => TRUE,
+      'description' => t('Authentication status (success, failure, blocked, etc.).'),
+    ),
+    'response_code' => array(
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+      'description' => t('HTTP response code returned.'),
+    ),
+    'error_message' => array(
+      'type' => 'text',
+      'not null' => FALSE,
+      'description' => t('Error message if authentication failed.'),
+    ),
+    'user_agent' => array(
+      'type' => 'text',
+      'not null' => FALSE,
+      'description' => t('User agent string from the request.'),
+    ),
+  ),
+  'primary key' => array('id'),
+  'indexes' => array(
+    'timestamp' => array('timestamp'),
+    'status' => array('status'),
+    'authentication_method' => array('authentication_method'),
+    'client_ip' => array('client_ip'),
+  ),
+  );
+  return $schema;
+}
+
+function rest_api_authentication_update_8001() {
+  $logger = \Drupal::logger('rest_api_authentication');
+  $messenger = \Drupal::messenger();
+  
+  $logger->info('Starting update hook 8001 - Migration to applications format and table creation');
+
+  try {
+    $schema = \Drupal::database()->schema();
+    
+    if (!$schema->tableExists('rest_api_authentication_logs')) {
+      $table_schema = rest_api_authentication_schema()['rest_api_authentication_logs'];
+      $schema->createTable('rest_api_authentication_logs', $table_schema);
+      $logger->info('rest_api_authentication_logs table created successfully');
+      $messenger->addMessage(t('REST API Authentication logs table has been created successfully.'));
+    } else {
+      $logger->info('rest_api_authentication_logs table already exists, skipping creation');
+    }
+  } catch (\Exception $e) {
+    $logger->error('Error creating rest_api_authentication_logs table: @error', ['@error' => $e->getMessage()]);
+    $messenger->addError(t('Error creating REST API Authentication logs table: @error', ['@error' => $e->getMessage()]));
+  }
+
+  $config = \Drupal::configFactory()->getEditable('rest_api_authentication.settings');
+  
+  $old_auth_method = $config->get('authentication_method');
+  $old_enable_auth = $config->get('enable_authentication');
+  $old_rest_api_auth_type = $config->get('rest_api_auth_type');
+    
+  if (isset($old_auth_method)) {
+    $app_id = substr(\Drupal::service('uuid')->generate(), 0, 8);
+    
+    $auth_method_names = [0 => 'Basic Authentication', 1 => 'API Key'];
+    $auth_method_name = $auth_method_names[$old_auth_method] ?? 'Basic Authentication';
+    
+    $applications = [
+      $app_id => [
+        'id' => $app_id,
+        'name' =>'Default Application',
+        'auth_method' => $auth_method_name,
+        'header_info' => 'AUTH-METHOD: ' . $app_id,
+        'is_default' => TRUE,
+        'enable_authentication' => $old_enable_auth ?: FALSE,
+        'whitelist_get_apis' => FALSE,
+        'authentication_method' => $old_auth_method,
+        'api_token' => $config->get('api_token') ?: '',
+        'rest_api_auth_type' => ($old_auth_method == 1 && isset($old_rest_api_auth_type)) ? $old_rest_api_auth_type : NULL,
+      ]
+    ];
+    
+    try {
+      $config->set('applications', $applications)
+             ->set('default_application_id', $app_id)
+             ->save();
+      
+      $logger->info('Configuration saved successfully. Default application ID: @app_id', ['@app_id' => $app_id]);
+      
+      $saved_config = \Drupal::config('rest_api_authentication.settings');
+      $saved_applications = $saved_config->get('applications');
+      $saved_default = $saved_config->get('default_application_id');
+       
+      if (!empty($saved_applications) && $saved_default) {
+        $messenger->addMessage(t('Configuration migrated successfully to new applications format. Default application "@name" (ID: @id) has been created.', [
+          '@name' => $applications[$app_id]['name'],
+          '@id' => $app_id
+        ]));
+        $logger->info('Migration completed successfully with user notification');
+        
+      } else {
+        $messenger->addError(t('Migration completed but verification failed. Please check the logs.'));
+        $logger->error('Migration verification failed - applications or default ID not found after save');
+      }
+      
+    } catch (\Exception $e) {
+      $logger->error('Error during migration: @error', ['@error' => $e->getMessage()]);
+      $messenger->addError(t('Error during configuration migration: @error', ['@error' => $e->getMessage()]));
+    }
+  }
+}
+
+

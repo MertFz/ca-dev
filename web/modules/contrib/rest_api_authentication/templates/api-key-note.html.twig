@@ -1,0 +1,14 @@
+{#
+/**
+ * @file
+ * Template for API Key authentication note.
+ */
+#}
+
+<div class="api-auth-note">
+  <p><strong>Note:</strong> If you select <b>API Key</b> as the authentication type, you must include the API key in the request header as:</p>
+  <p><code>API-KEY: &lt;base64_encoded_value&gt;</code></p>
+  <p>The value should be Base64-encoded in the format: <code>username:api-key</code>.</p>
+  <p><strong>Example:</strong> <code>admin:ABC123</code> → <code>YWRtaW46QUJDMTIz</code></p>
+  <p>Your request header will be:<br><strong>Key:</strong> <code>API-KEY</code> &nbsp;&nbsp; <strong>Value:</strong> <code>YWRtaW46QUJDMTIz</code></p>
+</div> 

@@ -1,0 +1,14 @@
+{#
+/**
+ * @file
+ * Template for Basic Auth authentication note.
+ */
+#}
+
+<div class="api-auth-note">
+  <p><strong>Note:</strong> If you select <b>Basic Auth</b> as the authentication type, add the username and API key in the <code>Authorization</code> header:</p>
+  <p><code>Authorization: Basic &lt;base64_encoded_value&gt;</code></p>
+  <p>Base64-encode your credentials in the format: <code>username:api-key</code>.</p>
+  <p><strong>Example:</strong> <code>admin:api-key</code> → <code>YWRtaW46YXBpLWtleQ==</code></p>
+  <p>Your request header will be:<br><code>Authorization: Basic YWRtaW46YXBpLWtleQ==</code></p>
+</div> 

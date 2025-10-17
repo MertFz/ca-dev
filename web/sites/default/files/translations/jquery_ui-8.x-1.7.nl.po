@@ -1,0 +1,26 @@
+# Dutch translation of jQuery UI (8.x-1.7)
+# Copyright (c) 2025 by the Dutch translation team
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: jQuery UI (8.x-1.7)\n"
+"POT-Creation-Date: 2025-02-17 19:38+0000\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Language-Team: Dutch\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+msgid "About"
+msgstr "Over"
+msgid "jQuery UI"
+msgstr "jQuery UI"
+msgid ""
+"For more information about the deprecation of jQuery UI, see this <a "
+"href=\":change-record\">change record</a>"
+msgstr ""
+"Zie voor meer informatie over de uitfasering van jQuery UI dit <a "
+"href=\":change-record\">wijzigingslog</a>"
+msgid "Provides jQuery UI library."
+msgstr "Biedt jQuery UI-bibliotheek."

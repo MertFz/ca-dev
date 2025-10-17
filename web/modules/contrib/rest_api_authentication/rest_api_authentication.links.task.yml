@@ -1,0 +1,29 @@
+rest_api_authentication.auth_settings:
+  route_name: rest_api_authentication.auth_settings
+  title: 'API Authentication'
+  weight: 10
+  base_route: rest_api_authentication.auth_settings
+
+rest_api_authentication.advanced_settings:
+  route_name: rest_api_authentication.advanced_settings
+  title: 'Advanced Settings'
+  weight: 20
+  base_route: rest_api_authentication.auth_settings
+
+rest_api_authentication.headless_sso:
+  route_name: rest_api_authentication.headless_sso
+  title: 'Headless SSO'
+  weight: 30
+  base_route: rest_api_authentication.auth_settings
+
+rest_api_authentication.audit_logs:
+  route_name: rest_api_authentication.audit_logs
+  title: 'Audit Logs'
+  weight: 40
+  base_route: rest_api_authentication.auth_settings
+
+rest_api_authentication.upgrade_plans:
+  route_name: rest_api_authentication.upgrade_plans
+  title: 'Upgrade Plans'
+  weight: 50
+  base_route: rest_api_authentication.auth_settings
