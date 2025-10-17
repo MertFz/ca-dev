@@ -2,14 +2,10 @@
 
 namespace Drupal\eca_paybylink\Plugin\Action;
 
-use Drupal\Core\Action\ActionBase;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\eca\Plugin\Action\ConfigurableActionBase;
-use Drupal\Core\Plugin\ContextAwarePluginTrait;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use GuzzleHttp\ClientInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 
@@ -18,14 +14,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "eca_paybylink_request",
  *   label = @Translation("Make PayByLink Request"),
  *   type = "custom",
- *   context_definitions = {
- *     "paybylink_response" = @ContextDefinition("string", label = @Translation("PayByLink response"), required = FALSE),
- *     "paybylink_url" = @ContextDefinition("string", label = @Translation("PayByLink URL"), required = FALSE),
- *   }
  * )
  */
 class PayByLinkRequest extends ConfigurableActionBase {
-  use ContextAwarePluginTrait;
 
   /**
    * The HTTP client.
@@ -189,8 +180,12 @@ class PayByLinkRequest extends ConfigurableActionBase {
       }
       $body = $response->getBody()->getContents();
 
-      // Return the full response body to make it available to other ECA actions.
-      $this->setContextValue('paybylink_response', $body);
+  // Return the full response body to make it available to other ECA actions.
+  // Using the ECA token service is more reliable here because this plugin
+  // does not expose runtime context definitions the Context API expects,
+  // which caused "not a valid context" exceptions. Tokens are intended
+  // for sharing arbitrary data between ECA actions.
+  $this->tokenService->addTokenData('paybylink_response', $body);
 
       // Try to extract a payment URL from the response and expose it as a
       // separate context value `paybylink_url` so downstream ECA actions can
@@ -231,7 +226,10 @@ class PayByLinkRequest extends ConfigurableActionBase {
       }
 
       if ($paybylink_url) {
-        $this->setContextValue('paybylink_url', $paybylink_url);
+        // Store the extracted URL as an ECA token so downstream actions can
+        // consume it (for example the Token: set value action or Token-based
+        // entity saves).
+        $this->tokenService->addTokenData('paybylink_url', $paybylink_url);
         \Drupal::logger('eca_paybylink')->info('PayByLink request successful. Extracted URL: @url', ['@url' => $paybylink_url]);
       }
       else {
