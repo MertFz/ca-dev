@@ -14,11 +14,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 
 /**
-* @Action(
-*   id = "eca_paybylink_request",
-*   label = @Translation("Make PayByLink Request"),
-*   type = "custom",
-* )
+ * @Action(
+ *   id = "eca_paybylink_request",
+ *   label = @Translation("Make PayByLink Request"),
+ *   type = "custom",
+ *   context_definitions = {
+ *     "paybylink_response" = @ContextDefinition("string", label = @Translation("PayByLink response"), required = FALSE),
+ *     "paybylink_url" = @ContextDefinition("string", label = @Translation("PayByLink URL"), required = FALSE),
+ *   }
+ * )
  */
 class PayByLinkRequest extends ConfigurableActionBase {
   use ContextAwarePluginTrait;
